@@ -1,16 +1,16 @@
 -- ─────────────────────────────────────────────────────────────────────────────
--- setup-db.sql — Script di inizializzazione del database per il progetto YellowPigeon.
+-- setup-db.sql — Database initialization script for the YellowPigeon project.
 --
--- Eseguire questo script su SQL Server (locale via Docker o Azure) PRIMA di avviare l'API.
--- Lo script è idempotente: usa IF NOT EXISTS per evitare errori se eseguito più volte.
+-- Run this script on SQL Server (local via Docker or Azure) BEFORE starting the API.
+-- The script is idempotent: it uses IF NOT EXISTS to avoid errors when executed multiple times.
 --
--- Connessione suggerita:
+-- Suggested connection:
 --   Server : localhost,1433
 --   Login  : sa
 --   Password: Your_password123!
 -- ─────────────────────────────────────────────────────────────────────────────
 
--- ── 1. Crea il database se non esiste ────────────────────────────────────────
+-- ── 1. Create the database if it does not exist ──────────────────────────────
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'OrdersLab')
 BEGIN
     CREATE DATABASE OrdersLab;
@@ -20,9 +20,9 @@ GO
 USE OrdersLab;
 GO
 
--- ── 2. Tabella Customers ──────────────────────────────────────────────────────
--- Tabella di supporto per la FK su Orders.CustomerId.
--- In un progetto reale sarebbe gestita da una propria API; qui viene pre-popolata con dati di test.
+-- ── 2. Customers table ───────────────────────────────────────────────────────
+-- Support table for the FK on Orders.CustomerId.
+-- In a real project this would be managed by its own API; here it is pre-populated with test data.
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Customers')
 BEGIN
     CREATE TABLE Customers (
@@ -32,10 +32,10 @@ BEGIN
 END;
 GO
 
--- ── 3. Tabella Orders ─────────────────────────────────────────────────────────
--- Testata dell'ordine. OrderId è IDENTITY (auto-increment).
--- CreatedAtUtc viene impostato lato applicazione (non usa DEFAULT per permettere
--- al service di controllare il timestamp e restituirlo nella risposta).
+-- ── 3. Orders table ──────────────────────────────────────────────────────────
+-- Order header. OrderId is IDENTITY (auto-increment).
+-- CreatedAtUtc is set by the application (no DEFAULT is used so the
+-- service can control the timestamp and return it in the response).
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Orders')
 BEGIN
     CREATE TABLE Orders (
@@ -51,9 +51,9 @@ BEGIN
 END;
 GO
 
--- ── 4. Tabella OrderItems ─────────────────────────────────────────────────────
--- Righe d'ordine. Ogni riga è collegata a un ordine tramite FK su OrderId.
--- Quantity e UnitPrice hanno CHECK constraint per garantire valori positivi anche a DB level.
+-- ── 4. OrderItems table ──────────────────────────────────────────────────────
+-- Order lines. Each row is linked to an order through the FK on OrderId.
+-- Quantity and UnitPrice have CHECK constraints to enforce positive values at DB level too.
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'OrderItems')
 BEGIN
     CREATE TABLE OrderItems (
@@ -66,17 +66,17 @@ BEGIN
         CONSTRAINT FK_OrderItems_Orders
             FOREIGN KEY (OrderId) REFERENCES Orders(OrderId),
 
-        -- Questi CHECK replicano le validazioni del service come ultimo livello di difesa
+        -- These CHECK constraints replicate service validations as a final safety layer
         CONSTRAINT CK_OrderItems_Quantity  CHECK (Quantity > 0),
         CONSTRAINT CK_OrderItems_UnitPrice CHECK (UnitPrice > 0)
     );
 END;
 GO
 
--- ── 5. Seed dati di test ──────────────────────────────────────────────────────
--- Inserisce due customer di esempio usati nel file requests.http.
--- customerId=1 → ordine valido (happy path)
--- customerId=99999 → non esiste → provoca FK violation → 409 Conflict
+-- ── 5. Seed test data ────────────────────────────────────────────────────────
+-- Inserts two sample customers used in requests.http.
+-- customerId=1 -> valid order (happy path)
+-- customerId=99999 -> does not exist -> triggers FK violation -> 409 Conflict
 IF NOT EXISTS (SELECT * FROM Customers WHERE CustomerId = 1)
 BEGIN
     INSERT INTO Customers (CustomerId, Name) VALUES (1, 'Demo Customer');
@@ -88,8 +88,8 @@ BEGIN
 END;
 GO
 
--- ── Verifica finale ───────────────────────────────────────────────────────────
-SELECT 'Setup completato.' AS Stato;
+-- ── Final verification ───────────────────────────────────────────────────────
+SELECT 'Setup completed.' AS Status;
 SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';
 SELECT * FROM Customers;
 GO

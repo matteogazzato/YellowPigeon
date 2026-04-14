@@ -1,1 +1,80 @@
+# macOS
 .DS_Store
+
+# Build folders
+bin/
+obj/
+out/
+TestResults/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.rsuser
+*.sln.docstates
+
+# Visual Studio / VS Code settings
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Rider / ReSharper
+.idea/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+!**/packages/build/
+!**/packages/repositories.config
+
+# Dotnet tools and local cache
+.dotnet/
+artifacts/
+
+# Logs and diagnostics
+*.log
+*.svclog
+*.trace
+
+# Coverage reports
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+*.opencover.xml
+*.lcov
+
+# Test / benchmark artifacts
+BenchmarkDotNet.Artifacts/
+
+# ASP.NET / publish artifacts
+publish/
+wwwroot/dist/
+
+# Azure / local secrets
+appsettings.Development.local.json
+appsettings.Local.json
+secrets.json
+
+# SQL Server local files
+*.mdf
+*.ldf
+
+# Generated files
+Generated/
+*.generated.cs
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
