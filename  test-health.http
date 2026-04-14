@@ -1,0 +1,5 @@
+### Health check endpoint - Test database connectivity
+### Expected: 200 Healthy with database connection info
+### Or: 503 Unhealthy if connection fails
+
+GET http://localhost:5149/health
