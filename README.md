@@ -2,7 +2,8 @@
 
 Skeleton project for the hands-on lab **"From Ticket To Working Code"** with GitHub Copilot.
 
-This repository currently contains only the **base project structure** and database setup scripts. During the demo, we will use prompts from [Prompt_Pack.md](../Prompt_Pack.md) to generate the C# code required to implement the ticket described in [Ugly_Ticket.md](../Ugly_Ticket.md).
+This repository currently contains only the **base project structure** and database setup scripts. It is used as a starting point to generate the C# code required to implement the ticket described in [Ugly_Ticket.md](../Ugly_Ticket.md).
+The goal is to achieve a working solution implementation of the ticket feature just using prompts.
 
 ---
 
@@ -13,15 +14,6 @@ This repository currently contains only the **base project structure** and datab
 - `OrdersLab` database setup script with `Orders`, `OrderItems`, and `Customers` tables
 - Folder structure (`Contracts`, `Services`, `Data`, `Middleware`, `Controllers`)
 - Minimal `Program.cs` (basic HTTP pipeline only)
-
-❌ **To be implemented during the lab (following Prompt_Pack.md):**
-- DTOs: `CreateOrderRequest`, `CreateOrderItemRequest`, `CreateOrderResponse`
-- Service layer: `IOrderService`, `OrderService`
-- Repository layer: `IOrderRepository`, `OrderRepository`, `SqlConnectionFactory`
-- Middleware: `GlobalExceptionMiddleware`
-- Controller: `OrdersController`
-- Validation and error handling
-- Manual test file (`requests.http`)
 
 ---
 
@@ -147,14 +139,12 @@ Make sure compilation succeeds before starting the lab steps.
 
 ## 6. During the Demo
 
-Follow prompts from [Prompt_Pack.md](../Prompt_Pack.md) to build the feature incrementally:
-
 1. **Prompt 1-2:** planning and design decisions
-2. **Prompt 5:** generate DTOs -> add 3 files in `Contracts/`
-3. **Prompt 8:** generate Service -> add `IOrderService.cs` and `OrderService.cs` in `Services/`
-4. **Prompt 9:** generate Repository -> add `IOrderRepository.cs`, `OrderRepository.cs`, `SqlConnectionFactory.cs` in `Data/`
-5. **Prompt 6 or 7:** generate Controller -> add `OrdersController.cs` in `Controllers/`
-6. **Prompt 10:** generate error-handling middleware -> add `GlobalExceptionMiddleware.cs` in `Middleware/`
+2. **Prompt 5:** generate DTOs 
+3. **Prompt 8:** generate Service 
+4. **Prompt 9:** generate Repository 
+5. **Prompt 6 or 7:** generate Controller 
+6. **Prompt 10:** generate error-handling middleware 
 7. Update `Program.cs` to register services in DI
 8. **Prompt 13:** add/use `requests.http` to test manually
 9. **Prompt 14:** add structured logging
