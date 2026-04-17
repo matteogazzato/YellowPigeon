@@ -1,3 +1,29 @@
+# Lab 1 — “From Ticket to Working Code” (API endpoint + validation)
+
+## Goal 
+Turn a realistic work item into an implementation quickly, with good structure.
+
+# Scenario
+Add a feature: Create Order endpoint that validates input, saves to DB, returns a DTO.
+* C# (ASP.NET Core minimal API or controller)
+* SQL table Orders and OrderItems
+
+# What they practice (Copilot daily usage)
+* Asking Copilot to propose an implementation plan from a user story
+* Generating scaffolding (DTOs, endpoints, service, repository)
+* Iterating: “Now add validation”, “Now handle errors”, “Now return proper HTTP codes”
+
+# 60-min flow
+* 0–5: context + acceptance criteria (tiny)
+* 5–20: Copilot generates skeleton + wiring
+* 20–40: implement business rules + error handling
+* 40–55: quick manual test + small improvements
+* 55–60: recap: “what prompts worked best”
+
+# Deliverables
+* Working endpoint
+* DTOs + validation rules
+
 # User Story
 ## Title: Create Order API — Persist Order with Items and Return Order Summary
 
