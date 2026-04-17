@@ -43,4 +43,10 @@ app.MapGet("/health", async (HealthCheckService healthCheck) =>
 
 app.Run();
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Partial class declaration for WebApplicationFactory integration tests
+// Allows the Program class to be referenced in test fixtures
+// ─────────────────────────────────────────────────────────────────────────────
+public partial class Program { }
+
 

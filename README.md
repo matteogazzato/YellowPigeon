@@ -1,89 +1,108 @@
-# YellowPigeon — Orders API
+# YellowPigeon - Orders API
 
-Skeleton project for the hands-on lab **"From Ticket To Working Code"** with GitHub Copilot.
+ASP.NET Core Web API solution for order management with SQL Server persistence and a dedicated test project.
 
-This repository currently contains only the **base project structure** and database setup scripts. It is used as a starting point to generate the C# code required to implement the ticket described in [Ugly_Ticket.md](../Ugly_Ticket.md).
-The goal is to achieve a working solution implementation of the ticket feature just using prompts.
+## Evolution Through Dedicated Sessions
 
----
+This project is intentionally maintained and used as a baseline codebase that evolves over time through dedicated and distinct hands-on sessions.
 
-## Current Status
+These sessions are designed to leverage GitHub Copilot as a practical co-development assistant for architecture, implementation, refactoring, and testing activities.
 
-✅ **Already in place:**
-- `.NET 10 ASP.NET Core` project scaffold
-- `OrdersLab` database setup script with `Orders`, `OrderItems`, and `Customers` tables
-- Folder structure (`Contracts`, `Services`, `Data`, `Middleware`, `Controllers`)
-- Minimal `Program.cs` (basic HTTP pipeline only)
+References for each lab/lesson are available in [Labs](Labs).
 
----
+The prompts used during the sessions (or prepared for upcoming sessions) are available in [PromptsLabs](PromptsLabs).
 
-## Table of Contents
+## Project Purpose
 
-- [YellowPigeon — Orders API](#yellowpigeon--orders-api)
-  - [Current Status](#current-status)
-  - [Table of Contents](#table-of-contents)
-  - [1. Project Context](#1-project-context)
-  - [2. Project Structure](#2-project-structure)
-  - [3. Prerequisites](#3-prerequisites)
-  - [4. Database Setup](#4-database-setup)
-    - [4a. Start SQL Server in Docker](#4a-start-sql-server-in-docker)
-    - [4b. Run setup-db.sql](#4b-run-setup-dbsql)
-  - [5. Run the Application](#5-run-the-application)
-  - [6. During the Demo](#6-during-the-demo)
+YellowPigeon provides a clean starting point for building and evolving an Orders backend service with:
+- API layer based on ASP.NET Core
+- business logic layer for order rules and calculations
+- data layer connected to SQL Server
+- test layer for automated verification
 
----
+The current codebase includes a health endpoint and core domain/service components for order total calculation.
 
-## 1. Project Context
+## Goals
 
-This project is based on the ticket in [Ugly_Ticket.md](../Ugly_Ticket.md), which defines a REST API user story:
+- Expose HTTP endpoints for order workflows
+- Keep code organized by responsibility (contracts, services, data, middleware)
+- Ensure maintainability and testability through a dedicated test project
+- Provide a reproducible local setup (database + application + test execution)
 
-> As a client application, I want to create a new order with one or more items so the order is saved in the database and can be processed later.
+## Architecture Overview
 
-**Acceptance Criteria (AC1-AC5):**
-- `POST /api/orders` endpoint with validation
-- Atomic persistence (SQL transaction)
-- `201 Created` response with `Location` header
-- Error handling: `400` for validation, `409` for DB conflicts, `500` for unexpected failures
+The solution follows a layered structure:
 
----
+- API / Hosting: application bootstrap and HTTP pipeline
+- Contracts: domain request/response and shared models
+- Services: business rules (for example total calculation)
+- Data: persistence and infrastructure services
+- Middleware: cross-cutting concerns and error handling
+- Tests: unit/integration test scaffolding
 
-## 2. Project Structure
+### Main Components
 
-```
+- `OrdersApi/Program.cs`
+  - Configures services, middleware, OpenAPI, and routes
+  - Exposes `GET /health`
+- `OrdersApi/Data/HealthCheckService.cs`
+  - Validates SQL Server connectivity for health diagnostics
+- `OrdersApi/Contracts/OrderModels.cs`
+  - Defines `Order` and `OrderItem` models
+- `OrdersApi/Services/OrderService.cs`
+  - Implements `CalculateOrderTotal(Order order)` with validation and rounding
+- `OrdersApi.Tests/`
+  - Test project (`xUnit`, `Moq`, `FluentAssertions`, `Microsoft.AspNetCore.Mvc.Testing`)
+
+## Repository Structure
+
+```text
 YellowPigeon/
-├── README.md                        <- this file
-├── scripts/
-│   └── setup-db.sql                 <- SQL script to create DB and tables
-└── OrdersApi/                       # Web API project
-    ├── OrdersApi.csproj
-    ├── Program.cs                   <- minimal startup, DI still to be added
-    ├── appsettings.json
-    ├── Properties/launchSettings.json
-    ├── Controllers/                 <- empty, add OrdersController during lab
-    ├── Contracts/                   <- empty, add DTOs during lab
-    ├── Services/                    <- empty, add Service + Interface during lab
-    ├── Data/                        <- empty, add Repository + Factory during lab
-    └── Middleware/                  <- empty, add GlobalExceptionMiddleware during lab
+|- README.md
+|- OrdersLab.slnx
+|- scripts/
+|  |- setup-db.sql
+|- OrdersApi/
+|  |- OrdersApi.csproj
+|  |- Program.cs
+|  |- appsettings.json
+|  |- appsettings.Development.json
+|  |- Properties/
+|  |  |- launchSettings.json
+|  |- Contracts/
+|  |  |- OrderModels.cs
+|  |- Services/
+|  |  |- OrderService.cs
+|  |- Data/
+|  |  |- HealthCheckService.cs
+|  |- Middleware/
+|- OrdersApi.Tests/
+|  |- OrdersApi.Tests.csproj
+|  |- UnitTest1.cs
 ```
 
----
+## Prerequisites
 
-## 3. Prerequisites
+- .NET 10 SDK
+- Docker Desktop
+- SQL Server client tool (optional but recommended)
+  - VS Code extension `ms-mssql.mssql` or any SQL client
+- VS Code extension `ms-dotnettools.csdevkit` (recommended)
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [VS Code](https://code.visualstudio.com/) with extensions:
-  - **C# Dev Kit** (`ms-dotnettools.csdevkit`)
-  - **REST Client** (`humao.rest-client`) - optional, for manual HTTP tests
-  - **SQL Server (mssql)** (`ms-mssql.mssql`) - optional
+## Setup From Scratch
 
----
+### 1. Restore dependencies
 
-## 4. Database Setup
+From repository root:
 
-### 4a. Start SQL Server in Docker
+```bash
+dotnet restore OrdersLab.slnx
+```
 
-**Mac Intel:**
+### 2. Start SQL Server in Docker
+
+Mac Intel:
+
 ```bash
 docker run --name sql-orders \
   -e "ACCEPT_EULA=Y" \
@@ -92,7 +111,8 @@ docker run --name sql-orders \
   -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-**Mac Apple Silicon:**
+Mac Apple Silicon:
+
 ```bash
 docker run --name sql-orders \
   --platform linux/amd64 \
@@ -102,51 +122,143 @@ docker run --name sql-orders \
   -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-Wait ~30 seconds, then verify:
+Verify container status:
+
 ```bash
 docker ps | grep sql-orders
 ```
 
-### 4b. Run setup-db.sql
+### 3. Initialize database schema
 
-Connect to SQL Server with:
-- **Server:** `localhost,1433`
-- **Username:** `sa`
-- **Password:** `Your_password123!`
+Run `scripts/setup-db.sql` against SQL Server:
+- Server: `localhost,1433`
+- User: `sa`
+- Password: `Your_password123!`
 
-Use the VS Code **SQL Server (mssql)** extension or any SQL client.
-
-Open [scripts/setup-db.sql](scripts/setup-db.sql) and execute it. The script creates:
+The script creates:
 - `OrdersLab` database
 - `Customers`, `Orders`, `OrderItems` tables
-- Two sample customers (`CustomerId` 1 and 2)
+- sample customers
 
----
+### 4. Verify connection string
 
-## 5. Run the Application
+Check `OrdersApi/appsettings.json` and/or `OrdersApi/appsettings.Development.json` for `ConnectionStrings:OrdersDb`.
 
-From the `YellowPigeon/OrdersApi` folder:
+The `HealthCheckService` expects this key:
+
+```json
+"ConnectionStrings": {
+  "OrdersDb": "Server=localhost,1433;Database=OrdersLab;User Id=sa;Password=Your_password123!;TrustServerCertificate=True;"
+}
+```
+
+## Build, Run, Test
+
+### Build solution
+
+```bash
+dotnet build OrdersLab.slnx
+```
+
+### Run API
+
+From repository root:
+
+```bash
+dotnet run --project OrdersApi/OrdersApi.csproj
+```
+
+or from `OrdersApi/`:
 
 ```bash
 dotnet run
 ```
 
-The app usually starts on `http://localhost:5149` (HTTP) or on the port configured in `launchSettings.json`.
+### Run tests
 
-Make sure compilation succeeds before starting the lab steps.
+```bash
+dotnet test OrdersLab.slnx
+```
 
----
+List discovered tests:
 
-## 6. During the Demo
+```bash
+dotnet test OrdersApi.Tests --list-tests
+```
 
-1. **Prompt 1-2:** planning and design decisions
-2. **Prompt 5:** generate DTOs 
-3. **Prompt 8:** generate Service 
-4. **Prompt 9:** generate Repository 
-5. **Prompt 6 or 7:** generate Controller 
-6. **Prompt 10:** generate error-handling middleware 
-7. Update `Program.cs` to register services in DI
-8. **Prompt 13:** add/use `requests.http` to test manually
-9. **Prompt 14:** add structured logging
+Run tests with detailed logs:
 
-After each step, run `dotnet build` and `dotnet run` to ensure everything still compiles and starts correctly.
+```bash
+dotnet test OrdersApi.Tests -v detailed
+```
+
+Run tests with coverage (collector enabled):
+
+```bash
+dotnet test OrdersApi.Tests /p:CollectCoverage=true
+```
+
+## Useful Commands
+
+```bash
+# Stop SQL container
+docker stop sql-orders
+
+# Restart SQL container
+docker start sql-orders
+
+# Remove SQL container (data loss if not persisted)
+docker rm -f sql-orders
+
+# Clean solution outputs
+dotnet clean OrdersLab.slnx
+
+# Restore + build in one flow
+dotnet restore OrdersLab.slnx && dotnet build OrdersLab.slnx
+```
+
+## Available Endpoint
+
+### Health Check
+
+- Method: `GET`
+- Path: `/health`
+- Behavior:
+  - `200` when SQL connectivity is healthy
+  - `503` when SQL connectivity fails
+
+Example:
+
+```bash
+curl http://localhost:5149/health
+```
+
+## Troubleshooting
+
+### Build succeeds but `/health` returns 503
+
+Possible causes:
+- SQL container not running
+- wrong connection string
+- schema script not executed
+
+Checks:
+
+```bash
+docker ps | grep sql-orders
+```
+
+Verify `ConnectionStrings:OrdersDb` and rerun `scripts/setup-db.sql` if needed.
+
+### `dotnet test` shows no tests or only template tests
+
+The test project is set up correctly, but only template tests may exist.
+Add real unit tests under `OrdersApi.Tests/` and rerun:
+
+```bash
+dotnet test OrdersApi.Tests --list-tests
+```
+
+### Port conflicts on startup
+
+If default ports are busy, update launch settings in `OrdersApi/Properties/launchSettings.json` or run with custom URLs.
