@@ -1,9 +1,4 @@
-﻿using E80.CAD.API;
-using E80.CAD.API.Entities;
-using E80.CAD.API.Entities.Geometry;
-using E80.CAD.API.Executable;
-using E80.CAD.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
