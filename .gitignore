@@ -78,3 +78,7 @@ Generated/
 *.temp
 *.bak
 *.swp
+
+# GitHub Copilot and docs
+.github/
+docs/
