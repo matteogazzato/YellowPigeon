@@ -1,7 +1,3 @@
-using E80.CAD.API;
-using E80.CAD.API.Entities;
-using E80.CAD.API.Entities.Geometry;
-using E80.CAD.API.Executable;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
