@@ -7,6 +7,16 @@ namespace OrdersApi.Services;
 /// </summary>
 public class OrderService
 {
+    private readonly IOrderRepository _repository;
+
+    /// <summary>
+    /// Initializes a new instance of the OrderService.
+    /// </summary>
+    /// <param name="repository">The order repository for data access.</param>
+    public OrderService(IOrderRepository repository)
+    {
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
     /// <summary>
     /// Calculates the final order total using subtotal, discount, and tax.
     ///
