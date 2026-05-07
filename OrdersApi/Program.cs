@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 using OrdersApi.Data;
+using OrdersApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+
+// Register application services
+builder.Services.AddScoped<OrderService>();
 
 // Register health check service for diagnostics
 builder.Services.AddSingleton<HealthCheckService>();
