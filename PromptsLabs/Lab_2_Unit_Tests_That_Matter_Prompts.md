@@ -56,3 +56,74 @@ Refactor this test suite:
 3. Ensure each test class has a single responsibility
 [paste test suite]
 ```
+
+---
+
+# BONUS: ApplyBulkDiscount() Prompts (If Time Remains)
+
+**Context**: If time allows during the lab, use these prompts to test a second method: `ApplyBulkDiscount(Order order)`.
+This method returns a bulk discount percentage (0%, 5%, 10%, 15%) based on total item quantity tiers.
+
+## Bonus 1. Understand the Tier Logic
+```text
+Review the ApplyBulkDiscount() method and explain:
+1. What are the quantity thresholds?
+2. What discount percentage is returned for each tier?
+3. What are the **critical boundary values** to test?
+4. Why is quantity aggregation (sum across items) important to test?
+```
+
+## Bonus 2. Identify Tier Boundary Test Cases
+```text
+For ApplyBulkDiscount(), list all test cases needed to verify correct tier assignment.
+Use Given-When-Then format. Focus on:
+- Minimum quantity in each tier (e.g., 1, 11, 26, 51)
+- Maximum quantity in each tier (e.g., 10, 25, 50, 100+)
+- Off-by-one boundary violations (e.g., 10 vs. 11, 25 vs. 26, 50 vs. 51)
+
+Which of these are most critical to catch bugs?
+```
+
+## Bonus 3. Generate Tier Boundary Tests
+```text
+Using xUnit [Theory] with [InlineData], generate parameterized tests for ApplyBulkDiscount()
+that cover:
+- Each tier minimum quantity (1, 11, 26, 51)
+- Each tier maximum quantity (10, 25, 50, 100)
+- All tier transitions (10→11, 25→26, 50→51)
+
+Expected format: [InlineData(quantity, expectedDiscount)] with comments explaining each case.
+```
+
+## Bonus 4. Validation and Edge Cases
+```text
+Add tests for ApplyBulkDiscount() that verify:
+1. Null order throws ArgumentNullException
+2. Empty items collection throws ArgumentException
+3. Null item in collection throws ArgumentException
+4. Negative or zero quantity in an item throws ArgumentException
+5. Single item with high quantity (51+) triggers highest tier
+
+Ensure each test name follows: MethodName_Condition_ExpectedResult
+```
+
+## Bonus 5. Comparison with CalculateOrderTotal() Tests
+```text
+Compare the test structure for ApplyBulkDiscount() with CalculateOrderTotal():
+1. How many test cases does each method need? Why?
+2. Which method has more complex validation? Why?
+3. When should you use a simple [Fact] vs. a [Theory] with multiple [InlineData]?
+4. What does this tell you about test granularity and coverage strategy?
+```
+
+## Bonus 6. Add to Integration Flow
+```text
+Create a test that demonstrates the full flow:
+1. Create an order with 15 items
+2. Call ApplyBulkDiscount() to get the bulk discount (should be 5%)
+3. Combine the bulk discount with an existing discount (e.g., 10% promotional discount)
+4. Pass the combined discount to CalculateOrderTotal()
+5. Assert the final total is correctly calculated
+
+This tests how ApplyBulkDiscount() integrates with CalculateOrderTotal() in real usage.
+```

@@ -89,3 +89,43 @@ This means Lab 2 can start directly from real code and focus on test quality: eq
 * Using Copilot to identify missing cases
 * Refactoring tests for readability
 * Isolating logic with mocks
+
+---
+
+## Bonus Scenario (If Time Remains): ApplyBulkDiscount()
+
+### Context
+In addition to `CalculateOrderTotal()`, the lab includes a second method to test if time allows:
+
+**`ApplyBulkDiscount(Order order)`**
+- Applies a **progressive discount** based on **total item quantity** (not value)
+- Returns the discount percentage to apply (e.g., 5m for 5%)
+- Tier structure:
+  - 1–10 items → 0% discount
+  - 11–25 items → 5% discount
+  - 26–50 items → 10% discount
+  - 51+ items → 15% discount
+
+### Why This Bonus Scenario?
+This method complements `CalculateOrderTotal()` by introducing:
+1. **Range-based logic** (boundaries at 10, 25, 50, 51 are critical)
+2. **Quantity aggregation** (sum across items, not per-item logic)
+3. **Simpler calculation** (just returns a percentage, no complex formula)
+4. **Switch expression patterns** (modern C# style to test)
+
+### What Students Practice
+* Testing **range boundaries** (off-by-one errors, edge cases at tier thresholds)
+* Identifying **equivalence classes** for quantity bins
+* Using **parameterized tests** efficiently with multiple boundary scenarios
+* Recognizing when a method is **too simple to over-test** vs. needing thorough edge-case coverage
+
+### Implementation Reference
+- See [OrdersApi/Services/OrderService.cs](OrdersApi/Services/OrderService.cs): `ApplyBulkDiscount(Order order)` method
+- Follows the same validation and error-handling patterns as `CalculateOrderTotal()`
+
+### Suggested Flow (10–15 minutes)
+1. **Review the code**: Identify tier boundaries and potential off-by-one errors
+2. **List test cases**: Use Given-When-Then for each tier + boundary conditions
+3. **Generate baseline tests**: Use `[Theory]` with `[InlineData]` for all tier transitions (e.g., 10, 11, 25, 26, 50, 51)
+4. **Add validation tests**: Null orders, empty items, invalid quantities
+5. **Compare with `CalculateOrderTotal()` tests**: Discuss why this method is simpler and how test strategy differs

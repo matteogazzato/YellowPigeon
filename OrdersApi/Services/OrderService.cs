@@ -80,4 +80,62 @@ public class OrderService
 
         return Math.Round(total, 2, MidpointRounding.AwayFromZero);
     }
+
+    /// <summary>
+    /// Applies a progressive bulk discount based on total item quantity.
+    ///
+    /// Discount tiers:
+    /// - 1–10 items: 0% additional discount
+    /// - 11–25 items: 5% additional discount
+    /// - 26–50 items: 10% additional discount
+    /// - 51+ items: 15% additional discount
+    ///
+    /// The bulk discount is returned as a decimal percentage (e.g., 5m for 5%).
+    /// The caller is responsible for combining this with existing discounts
+    /// and calculating the final order total.
+    ///
+    /// Validation rules:
+    /// - order must not be null
+    /// - items collection must contain at least one item
+    /// - each item must have Quantity > 0
+    /// </summary>
+    /// <param name="order">Order used to determine total item quantity.</param>
+    /// <returns>The bulk discount percentage to apply (e.g., 5m, 10m, 15m).</returns>
+    /// <exception cref="ArgumentNullException">Thrown when order is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when items are null, empty, or contain invalid quantities.</exception>
+    public decimal ApplyBulkDiscount(Order order)
+    {
+        ArgumentNullException.ThrowIfNull(order);
+
+        if (order.Items is null || order.Items.Count == 0)
+        {
+            throw new ArgumentException("Order must contain at least one item.", nameof(order));
+        }
+
+        int totalQuantity = 0;
+
+        foreach (var item in order.Items)
+        {
+            if (item is null)
+            {
+                throw new ArgumentException("Order contains a null item.", nameof(order));
+            }
+
+            if (item.Quantity <= 0)
+            {
+                throw new ArgumentException("Each item must have Quantity > 0.", nameof(order));
+            }
+
+            totalQuantity += item.Quantity;
+        }
+
+        return totalQuantity switch
+        {
+            >= 1 and <= 10 => 0m,
+            >= 11 and <= 25 => 5m,
+            >= 26 and <= 50 => 10m,
+            >= 51 => 15m,
+            _ => 0m // Should not reach here due to validation above
+        };
+    }
 }
