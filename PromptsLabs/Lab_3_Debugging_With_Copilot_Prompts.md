@@ -2,19 +2,10 @@
 
 ## 1. Analyze the Failure
 ```text
-I have a failing test in my C# API.
-
-Test name: [TestName]
-Expected: [ExpectedValue]
-Actual: [ActualValue]
-
-Here's the CalculateOrderTotal method:
-[paste code]
-
-And the test case:
-[paste test]
-
-What could cause this result? Walk me through the calculation step-by-step.
+I have a failing test in my C# API, what could cause this result? Walk me through the calculation step-by-step.
+The test is [Test Name]. The Expected result is [ExpectedValue]. The actual value is [ActualValue]
+Here's the method [FileName]
+The test case is defined in [TestFileMethodName]
 ```
 
 ## 2. Root Cause Analysis - First Pass
@@ -25,7 +16,7 @@ List 3-5 potential causes, ordered by probability.
 For each cause, explain what would need to be true in the code.
 ```
 
-## 3. Root Cause Analysis - Deep Dive
+## 3. Root Cause Analysis - Deep Dive (Opzionale)
 ```text
 The test shows a [discount percentage]% discount on [subtotal] subtotal.
 Walk me through what the code does step-by-step:
@@ -41,7 +32,7 @@ Which step produces the incorrect result?
 ## 4. Propose the Fix
 ```text
 Based on the root cause analysis, what's the minimal fix?
-Show me the corrected code for lines [X]–[Y].
+Show me the corrected code for lines in [MethodFileName].
 
 I want to make sure the fix:
 - Doesn't break other tests
@@ -51,24 +42,17 @@ I want to make sure the fix:
 
 ## 5. Write a Regression Test
 ```text
-Write an xUnit test case named:
-[TestName_Condition_ExpectedResult]
-
+Write an xUnit test case named with a proper name, using naming style TestName_Condition_ExpectedResult.
+Use the same test structure as existing tests in the suite.
 It should:
 - Create the exact scenario that triggered the bug
 - Assert that the issue no longer occurs
 - Include any boundary or edge case checks relevant to the bug
-
-Use the same test structure as existing tests in the suite.
 ```
 
 ## 6. Verify the Fix (Pattern)
 ```text
-I think the bug is on line [X]. The issue is [description].
-
-Here's my proposed fix:
-[code]
-
+Apply the proposed fix. 
 Will this fix the problem without side effects?
 Could it break anything else?
 Are there edge cases I'm missing?

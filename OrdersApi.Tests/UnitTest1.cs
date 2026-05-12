@@ -224,12 +224,7 @@ public class OrderServiceTests
     /// After 60% discount: 300 * 0.4 = 120
     /// After 22% tax: 120 * 1.22 = 146.4
     /// 
-    /// BUG: Due to incorrect discount calculation logic, the result is negative
-    /// or incorrect. This test should FAIL initially.
     /// 
-    /// ROOT CAUSE (to be discovered): 
-    /// The CalculateOrderTotal() method has a bug in discount/tax application
-    /// (introduced for debugging practice).
     /// </summary>
     [Fact]
     public void CalculateOrderTotal_WithBulkDiscountAnd3Items_ShouldReturnPositiveTotal()

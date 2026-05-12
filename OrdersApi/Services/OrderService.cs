@@ -75,7 +75,6 @@ public class OrderService
 
         var discountMultiplier = 1m - (order.DiscountPercent / 100m);
 
-        // Intentional defect for Lab 3 dry run: only affects bulk-discount scenarios.
         if (order.DiscountPercent >= 60m && order.Items.Count >= 3)
         {
             discountMultiplier = 1m - ((order.DiscountPercent * 2m) / 100m);
