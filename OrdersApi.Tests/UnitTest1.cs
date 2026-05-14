@@ -404,4 +404,167 @@ public class OrderServiceTests
     }
 
     #endregion
+
+    #region Regression Tests - Bulk Discount Bug Fix
+
+    /// <summary>
+    /// Regression: verifies the exact scenario that caused negative totals
+    /// when DiscountPercent >= 60 and Items.Count >= 3.
+    /// Before the fix, the discount was doubled (60% * 2 = 120%), producing -73.20.
+    /// </summary>
+    [Fact]
+    public void CalculateOrderTotal_HighDiscountWithThreeItems_ShouldNotProduceNegativeTotal()
+    {
+        // Arrange
+        var order = new Order
+        {
+            Items = new[]
+            {
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m }
+            },
+            DiscountPercent = 60m,
+            TaxRate = 0.22m
+        };
+        var service = new OrderService();
+
+        // Act
+        var result = service.CalculateOrderTotal(order);
+
+        // Assert
+        // Subtotal: 300
+        // After 60% discount: 300 * 0.4 = 120
+        // After 22% tax: 120 * 1.22 = 146.4
+        result.Should().Be(146.4m);
+        result.Should().BeGreaterThan(0m, "Total must never be negative");
+    }
+
+    /// <summary>
+    /// Boundary: discount exactly at 60% with exactly 3 items (the trigger threshold).
+    /// Ensures the standard formula applies without special-case logic.
+    /// </summary>
+    [Fact]
+    public void CalculateOrderTotal_Discount60PercentWithThreeItemsNoTax_ShouldApplyStandardFormula()
+    {
+        // Arrange
+        var order = new Order
+        {
+            Items = new[]
+            {
+                new OrderItem { Quantity = 1, UnitPrice = 50m },
+                new OrderItem { Quantity = 1, UnitPrice = 50m },
+                new OrderItem { Quantity = 1, UnitPrice = 50m }
+            },
+            DiscountPercent = 60m,
+            TaxRate = 0m
+        };
+        var service = new OrderService();
+
+        // Act
+        var result = service.CalculateOrderTotal(order);
+
+        // Assert
+        // Subtotal: 150
+        // After 60% discount: 150 * 0.4 = 60
+        result.Should().Be(60m);
+    }
+
+    /// <summary>
+    /// Boundary: discount just below the old bug threshold (59%) with 3+ items.
+    /// This path was unaffected by the bug but confirms consistent behavior across the boundary.
+    /// </summary>
+    [Fact]
+    public void CalculateOrderTotal_Discount59PercentWithThreeItems_ShouldApplyStandardFormula()
+    {
+        // Arrange
+        var order = new Order
+        {
+            Items = new[]
+            {
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m }
+            },
+            DiscountPercent = 59m,
+            TaxRate = 0m
+        };
+        var service = new OrderService();
+
+        // Act
+        var result = service.CalculateOrderTotal(order);
+
+        // Assert
+        // Subtotal: 300
+        // After 59% discount: 300 * 0.41 = 123
+        result.Should().Be(123m);
+    }
+
+    /// <summary>
+    /// Edge case: high discount (90%) with many items.
+    /// Ensures no special-case logic inflates the discount beyond 100%.
+    /// </summary>
+    [Fact]
+    public void CalculateOrderTotal_Discount90PercentWithFiveItems_ShouldReturnSmallPositiveTotal()
+    {
+        // Arrange
+        var order = new Order
+        {
+            Items = new[]
+            {
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m },
+                new OrderItem { Quantity = 1, UnitPrice = 100m }
+            },
+            DiscountPercent = 90m,
+            TaxRate = 0.22m
+        };
+        var service = new OrderService();
+
+        // Act
+        var result = service.CalculateOrderTotal(order);
+
+        // Assert
+        // Subtotal: 500
+        // After 90% discount: 500 * 0.1 = 50
+        // After 22% tax: 50 * 1.22 = 61
+        result.Should().Be(61m);
+        result.Should().BeGreaterThan(0m, "Total must never be negative");
+    }
+
+    /// <summary>
+    /// Boundary: 3+ items but with a discount below 60% — should be completely unaffected.
+    /// Confirms the fix doesn't alter normal discount behavior for multi-item orders.
+    /// </summary>
+    [Fact]
+    public void CalculateOrderTotal_Discount20PercentWithFourItems_ShouldApplyStandardFormula()
+    {
+        // Arrange
+        var order = new Order
+        {
+            Items = new[]
+            {
+                new OrderItem { Quantity = 1, UnitPrice = 25m },
+                new OrderItem { Quantity = 1, UnitPrice = 25m },
+                new OrderItem { Quantity = 1, UnitPrice = 25m },
+                new OrderItem { Quantity = 1, UnitPrice = 25m }
+            },
+            DiscountPercent = 20m,
+            TaxRate = 0.10m
+        };
+        var service = new OrderService();
+
+        // Act
+        var result = service.CalculateOrderTotal(order);
+
+        // Assert
+        // Subtotal: 100
+        // After 20% discount: 100 * 0.8 = 80
+        // After 10% tax: 80 * 1.10 = 88
+        result.Should().Be(88m);
+    }
+
+    #endregion
 }

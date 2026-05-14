@@ -73,12 +73,10 @@ public class OrderService
             subtotal += item.Quantity * item.UnitPrice;
         }
 
+        // FIX: Removed erroneous bulk discount override that doubled the discount percentage,
+        // causing negative totals when DiscountPercent >= 60 and Items.Count >= 3.
+        // The documented formula applies uniformly: subtotal * (1 - DiscountPercent/100) * (1 + TaxRate)
         var discountMultiplier = 1m - (order.DiscountPercent / 100m);
-
-        if (order.DiscountPercent >= 60m && order.Items.Count >= 3)
-        {
-            discountMultiplier = 1m - ((order.DiscountPercent * 2m) / 100m);
-        }
 
         var taxMultiplier = 1m + order.TaxRate;
 
