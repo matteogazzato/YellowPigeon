@@ -80,5 +80,6 @@ Generated/
 *.swp
 
 # GitHub Copilot and docs
-.github/
+.github/*
+!.github/copilot-instructions.md
 docs/
